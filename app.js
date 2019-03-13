@@ -5,8 +5,11 @@ http.createServer(function (req, res) {
     request({
         url: 'https://blockchain.info/stats?format=json',
         json: true
-    }, function (error, response, body) {
+    }, function (err, response, body) {
+        if (err) {
+            throw new Error(err);
+        }
         console.log(body)
     })
     res.end('bitcoin to the moon');
-}).listen(80);
+}).listen(8080);
