@@ -1,23 +1,28 @@
 const request = require('request');
 const express = require('express');
 const app = express();
-let btcPrice;
-let btcBlock;
+const bodyParser = require('body-parser');
+const bitCore = require('bitcore-lib');
 
-request({
-    url: 'https://blockchain.info/stats?format=json',
-    json: true
-}, function(err, response, body) {
-    btcPrice = body.market_price_usd;
-    btcBlock = body.n_blocks_total;
-})
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
-    res.send('Current block price: ' + btcPrice);
+    res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/block', function(req, res) {
-    res.sendFile('index.html');
+app.post('/wallet', function(req, res) {
+    const brainsrc = req.body.brainsrc;
+    console.log(brainsrc);
+    const input = new Buffer.from(brainsrc);
+    const hash = bitCore.crypto.Hash.sha256(input);
+    const bn = bitCore.crypto.BN.fromBuffer(hash);
+    const pk = new bitCore.PrivateKey(bn).toWIF();
+    const addy = new bitCore.PrivateKey(bn).toAddress();
+    res.send(`The Brain Wallet of: ${brainsrc}<br> Addy: ${addy}<br> Private Key: ${pk}`);
 });
 
 app.listen(8088, function() {
