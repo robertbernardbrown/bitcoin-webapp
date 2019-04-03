@@ -14,6 +14,14 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+function hasWalletBeenUsed(wallet) {
+  if (wallet.txs && wallet.txs.length) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 app.post('/wallet', function (req, res) {
   const brainsrc = req.body.brainsrc;
   console.log(brainsrc);
@@ -31,9 +39,7 @@ app.post('/wallet', function (req, res) {
       console.log(err)
     }
     blockchainBody = body;
-    console.log(blockchainBody);
-    // res.send(`${blockchainBody}`);
-    res.send(`The Brain Wallet of: ${brainsrc}<br> Addy: ${blockchainBody.address}<br> Private Key: ${pk}`);
+    res.send(`The Brain Wallet of: ${brainsrc}<br> Addy: ${blockchainBody.address}<br> Private Key: ${pk}<br> Has wallet been used: ${hasWalletBeenUsed(blockchainBody)}`);
   });
 });
 
