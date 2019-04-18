@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const bitCore = require('bitcore-lib');
+let price;
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -10,8 +11,19 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+app.set('view engine', 'ejs');
+
+request({
+  url:'https://api.coinbase.com/v2/prices/spot?currency=USD',
+  json: true
+}, function(err, res, body) {
+  price = body.data.amount
+})
+
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
+  res.render('index', {
+    lastPrice: price
+  });
 });
 
 function hasWalletBeenUsed(wallet) {
