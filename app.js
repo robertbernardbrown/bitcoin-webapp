@@ -13,16 +13,36 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 
-request({
-  url:'https://api.coinbase.com/v2/prices/spot?currency=USD',
-  json: true
-}, function(err, res, body) {
-  price = body.data.amount
-})
+function getPrice(returnPrice) {
+  request({
+    url:'https://api.coinbase.com/v2/prices/spot?currency=USD',
+    json: true
+  }, function(err, res, body) {
+    returnPrice(body.data.amount);
+  })
+}
 
 app.get('/', function (req, res) {
-  res.render('index', {
-    lastPrice: price
+  getPrice(function(price) {
+    res.render('index', {
+      lastPrice: price
+    });
+  });
+});
+
+app.get('/brain', function (req, res) {
+  getPrice(function(price) {
+    res.render('brain', {
+      lastPrice: price
+    });
+  });
+});
+
+app.get('/converter', function (req, res) {
+  getPrice(function(price) {
+    res.render('converter', {
+      lastPrice: price
+    });
   });
 });
 
